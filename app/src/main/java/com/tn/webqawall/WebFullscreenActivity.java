@@ -4,6 +4,7 @@ import com.tn.webqawall.util.WQWWebView;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,9 +22,14 @@ public class WebFullscreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("WQWLog", "Action Value: " + getIntent().getAction());
+        Log.d("WQWLog", "Has Extras: " + (getIntent().getExtras() != null));
+
         if(getIntent().getAction().equals("android.intent.action.MAIN") &&
             getIntent().getExtras() != null){
-            url = getIntent().getExtras().getString("URL_FROM_INTENT");
+
+            Log.d("WQWLog", "Extra Value on URL_FROM_INTENT: " + getIntent().getExtras().get(URL_FROM_INTENT));
+            url = getIntent().getExtras().getString(URL_FROM_INTENT);
         }
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
