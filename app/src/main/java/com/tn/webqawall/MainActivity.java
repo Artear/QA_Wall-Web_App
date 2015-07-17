@@ -9,6 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import com.github.nkzawa.emitter.Emitter;
+import com.google.gson.Gson;
+import com.tn.webqawall.socket.event.Page;
 
 /**
  * Created by David Tolchinsky on 14/07/2015.
@@ -20,6 +23,8 @@ public class MainActivity extends FragmentActivity
     private String url;
     private ViewPager viewPager;
     private MyPagerAdapter adapterViewPager;
+    private WebViewFragment webViewFragment;
+    private InfoFragment infoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,22 +49,41 @@ public class MainActivity extends FragmentActivity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.main_activity);
+
+        webViewFragment = new WebViewFragment();
+        infoFragment = new InfoFragment();
+
         viewPager = (ViewPager) findViewById(R.id.view_pager_qa_wall);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), "http://tn.com.ar");
         viewPager.setAdapter(adapterViewPager);
 
+        App.getSocket().on(Page.EVENT_NAME, new Emitter.Listener()
+        {
+            @Override
+            public void call(final Object... args)
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Page pageEvent = new Gson().fromJson(String.valueOf(args[0]), Page.class);
+
+                        webViewFragment.setUrl(pageEvent.getUrl());
+                    }
+                });
+            }
+        });
+
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter
+    public class MyPagerAdapter extends FragmentPagerAdapter
     {
-
-        private static int NUM_ITEMS = 2;
-        private final String mUrl;
+        private final int NUM_ITEMS = 2;
 
         public MyPagerAdapter(FragmentManager fm, String url)
         {
             super(fm);
-            this.mUrl = url;
         }
 
         @Override
@@ -68,9 +92,9 @@ public class MainActivity extends FragmentActivity
             switch (position)
             {
                 case 0: // Fragment # 0 - This will show FirstFragment
-                    return WebViewFragment.newInstance(mUrl);
+                    return webViewFragment;
                 case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return InfoFragment.newInstance();
+                    return infoFragment;
                 default:
                     return null;
             }
@@ -87,6 +111,7 @@ public class MainActivity extends FragmentActivity
     public void onBackPressed()
     {
         Fragment webview = getSupportFragmentManager().findFragmentByTag("webview");
+
         if (webview instanceof WebViewFragment)
         {
             if (((WebViewFragment) webview).canGoBack())

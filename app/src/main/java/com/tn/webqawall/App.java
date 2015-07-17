@@ -7,16 +7,17 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
 import com.qa_wall_logger_client.RemoteLogger;
-import com.qa_wall_logger_client.log.Log;
+import com.tn.webqawall.socket.event.Log;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
+;
+
 
 public class App extends Application
 {
-    public static final String SOCKET_HOOK_LOG = "log";
-    private Socket socket;
+    private static Socket socket;
     private static RemoteLogger remoteLogger;
 
     {
@@ -36,7 +37,7 @@ public class App extends Application
         remoteLogger = new RemoteLogger(new RemoteLogger.Listener()
         {
             @Override
-            public String onParseToJson(final Log log)
+            public String onParseToJson(final com.qa_wall_logger_client.log.Log log)
             {
                 return new Gson().toJson(log);
             }
@@ -45,7 +46,7 @@ public class App extends Application
             public void onSentToNetwork(final String parsedObject)
             {
                 android.util.Log.d("LOG", "Sending message: " + parsedObject);
-                socket.emit(SOCKET_HOOK_LOG, parsedObject, new Ack()
+                socket.emit(Log.EVENT_NAME, parsedObject, new Ack()
                 {
                     @Override
                     public void call(final Object... args)
@@ -66,6 +67,11 @@ public class App extends Application
         });
 
         socket.connect();
+    }
+
+    public static Socket getSocket()
+    {
+        return socket;
     }
 
     public static RemoteLogger getRemoteLogger()

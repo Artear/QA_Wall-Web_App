@@ -52,6 +52,7 @@ public class WebViewFragment extends Fragment
     public void setUrl(String url)
     {
         this.mUrl = url;
+        loadUrl();
     }
 
     public void loadUrl()
