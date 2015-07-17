@@ -9,36 +9,43 @@ import android.webkit.WebView;
 /**
  * Created by David Tolchinsky on 14/07/2015.
  */
-public class WQWWebView extends WebView{
+public class WQWWebView extends WebView
+{
 
-    public WQWWebView(Context context) {
+    public WQWWebView(Context context)
+    {
         super(context);
     }
 
-    public WQWWebView(Context context, AttributeSet attrs) {
+    public WQWWebView(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
     }
 
-    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr)
+    {
         super(context, attrs, defStyleAttr);
     }
 
     @TargetApi(21)
-    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes)
+    {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr, boolean privateBrowsing) {
+    public WQWWebView(Context context, AttributeSet attrs, int defStyleAttr, boolean privateBrowsing)
+    {
         super(context, attrs, defStyleAttr, privateBrowsing);
     }
 
     @Override
-    protected void onAttachedToWindow() {
+    protected void onAttachedToWindow()
+    {
         super.onAttachedToWindow();
 
         WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
-        addJavascriptInterface(new WQWInterface(getContext()),"Android");
+        addJavascriptInterface(new WQWInterface(getContext()), "Android");
 
         setWebViewClient(new WQWWebViewClient(getContext()));
 

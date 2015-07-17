@@ -3,24 +3,24 @@ package com.tn.webqawall;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.tn.webqawall.util.WQWWebView;
 
 /**
  * Created by David Tolchinsky on 17/07/2015.
  */
-public class WebViewFragment extends Fragment {
+public class WebViewFragment extends Fragment
+{
 
     private static final String URL_LOAD = "url_load";
 
     private WQWWebView webView;
     private String url;
 
-    public static WebViewFragment newInstance(String url) {
+    public static WebViewFragment newInstance(String url)
+    {
 
         WebViewFragment fragment = new WebViewFragment();
 
@@ -33,7 +33,8 @@ public class WebViewFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
 
         Bundle args = getArguments();
         url = args.getString(URL_LOAD);
@@ -45,15 +46,18 @@ public class WebViewFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
         outState.putString(URL_LOAD, url);
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState)
+    {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null)
+        {
             // Restore last state for checked position.
             url = savedInstanceState.getString(URL_LOAD);
         }
@@ -77,11 +81,13 @@ public class WebViewFragment extends Fragment {
         return super.onKeyDown(keyCode, event);
     }*/
 
-    public boolean canGoBack() {
+    public boolean canGoBack()
+    {
         return webView.canGoBack();
     }
 
-    public void goBack() {
+    public void goBack()
+    {
         webView.goBack();
     }
 }

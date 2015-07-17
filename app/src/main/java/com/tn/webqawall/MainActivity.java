@@ -13,7 +13,8 @@ import android.view.WindowManager;
 /**
  * Created by David Tolchinsky on 14/07/2015.
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity
+{
 
     private final static String URL_FROM_INTENT = "URL_FROM_INTENT";
     private String url;
@@ -21,14 +22,16 @@ public class MainActivity extends FragmentActivity {
     private MyPagerAdapter adapterViewPager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         Log.d("WQWLog", "Action Value: " + getIntent().getAction());
         Log.d("WQWLog", "Has Extras: " + (getIntent().getExtras() != null));
 
-        if(getIntent().getAction().equals("android.intent.action.MAIN") &&
-            getIntent().getExtras() != null){
+        if (getIntent().getAction().equals("android.intent.action.MAIN") &&
+                getIntent().getExtras() != null)
+        {
 
             Log.d("WQWLog", "Extra Value on URL_FROM_INTENT: " + getIntent().getExtras().get(URL_FROM_INTENT));
             url = getIntent().getExtras().getString(URL_FROM_INTENT);
@@ -47,19 +50,23 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter{
+    public static class MyPagerAdapter extends FragmentPagerAdapter
+    {
 
         private static int NUM_ITEMS = 2;
         private final String mUrl;
 
-        public MyPagerAdapter(FragmentManager fm, String url) {
+        public MyPagerAdapter(FragmentManager fm, String url)
+        {
             super(fm);
             this.mUrl = url;
         }
 
         @Override
-        public Fragment getItem(int position) {
-            switch (position) {
+        public Fragment getItem(int position)
+        {
+            switch (position)
+            {
                 case 0: // Fragment # 0 - This will show FirstFragment
                     return WebViewFragment.newInstance(mUrl);
                 case 1: // Fragment # 0 - This will show FirstFragment different title
@@ -70,18 +77,23 @@ public class MainActivity extends FragmentActivity {
         }
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return NUM_ITEMS;
         }
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         Fragment webview = getSupportFragmentManager().findFragmentByTag("webview");
-        if (webview instanceof WebViewFragment) {
-            if(((WebViewFragment)webview).canGoBack()){
-                ((WebViewFragment)webview).goBack();
-            }else{
+        if (webview instanceof WebViewFragment)
+        {
+            if (((WebViewFragment) webview).canGoBack())
+            {
+                ((WebViewFragment) webview).goBack();
+            } else
+            {
                 super.onBackPressed();
             }
         }
