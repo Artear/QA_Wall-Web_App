@@ -3,6 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    android:id="@+id/view_pager_qa_wall">
+    android:id="@+id/qa_wall_web_view">
 
 </com.tn.webqawall.util.WQWWebView>
