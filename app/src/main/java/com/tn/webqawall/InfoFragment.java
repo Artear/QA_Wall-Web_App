@@ -1,11 +1,16 @@
 package com.tn.webqawall;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
@@ -36,6 +41,18 @@ public class InfoFragment extends Fragment
         sdkTextView = (TextView) view.findViewById(R.id.sdk_info_fragment);
         resolutionTextView = (TextView) view.findViewById(R.id.resolution_info_fragment);
 
+        BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+        deviceNameTextView.setText(myDevice.getName());
+        deviceModelTextView.setText(Build.MODEL);
+        sdkTextView.setText(Build.VERSION.RELEASE);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) getActivity().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        resolutionTextView.setText(screenHeight + " x " + screenWidth);
         return view;
     }
 
