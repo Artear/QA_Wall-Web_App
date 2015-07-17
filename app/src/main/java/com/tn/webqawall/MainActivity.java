@@ -56,6 +56,12 @@ public class MainActivity extends FragmentActivity
         viewPager = (ViewPager) findViewById(R.id.view_pager_qa_wall);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
 
         App.getSocket().on(Page.EVENT_NAME, new Emitter.Listener()
         {
@@ -74,6 +80,17 @@ public class MainActivity extends FragmentActivity
                 });
             }
         });
+
+        App.getSocket().connect();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        App.getSocket().disconnect();
+        App.getSocket().off(Page.EVENT_NAME);
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter

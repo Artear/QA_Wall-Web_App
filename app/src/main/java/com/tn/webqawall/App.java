@@ -12,14 +12,14 @@ import com.tn.webqawall.socket.event.Log;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
-;
-
 
 public class App extends Application
 {
+    public static final String TAG= "SOCKET";
     private static Socket socket;
     private static RemoteLogger remoteLogger;
 
+    static
     {
         try
         {
@@ -45,13 +45,13 @@ public class App extends Application
             @Override
             public void onSentToNetwork(final String parsedObject)
             {
-                android.util.Log.d("LOG", "Sending message: " + parsedObject);
+                android.util.Log.d(TAG, "Sending message: " + parsedObject);
                 socket.emit(Log.EVENT_NAME, parsedObject, new Ack()
                 {
                     @Override
                     public void call(final Object... args)
                     {
-                        android.util.Log.d("LOG", "Message sent: " + Arrays.toString(args));
+                        android.util.Log.d(TAG, "Message sent: " + Arrays.toString(args));
                     }
                 });
             }
@@ -62,11 +62,10 @@ public class App extends Application
             @Override
             public void call(final Object... args)
             {
-                android.util.Log.d("LOG", "Socket Connected: " + Arrays.toString(args));
+                android.util.Log.d(TAG, "Socket Connected: " + Arrays.toString(args));
             }
         });
 
-        socket.connect();
     }
 
     public static Socket getSocket()
