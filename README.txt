@@ -21,13 +21,13 @@ adb -d install -r "<your-project-directory>/app/build/outputs/apk/app-debug.apk"
 
 #Then once installed, execute the next command line to run the application in your device:
 
-adb -d shell am start -n "com.tn.webqawall/com.tn.webqawall.WebFullscreenActivity" -a
+adb -d shell am start -n "com.tn.webqawall/com.tn.webqawall.MainActivity" -a
 android.intent.action.MAIN --es URL_FROM_INTENT <url_to_lunch>
 
 
 -NOTE: If you have different devices* connected you must define the device id as following
 
-adb -s <p_device_id> shell am start -n "com.tn.webqawall/com.tn.webqawall.WebFullscreenActivity" -a
+adb -s <p_device_id> shell am start -n "com.tn.webqawall/com.tn.webqawall.MainActivity" -a
 android.intent.action.MAIN --es URL_FROM_INTENT <url>
 
 *To know the devices list: adb devices
