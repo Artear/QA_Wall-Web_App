@@ -21,6 +21,7 @@ import com.tn.webqawall.socket.event.Page;
 public class MainActivity extends FragmentActivity
 {
     private final static String URL_FROM_INTENT = "URL_FROM_INTENT";
+    public static final String WAKE_LOCK_TAG = "WAKE_LOCK_TAG";
     private ViewPager viewPager;
     private MyPagerAdapter adapterViewPager;
     private WebViewFragment webViewFragment;
@@ -88,7 +89,7 @@ public class MainActivity extends FragmentActivity
 
         //Prevent screen sleep
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, null);
+        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, WAKE_LOCK_TAG);
         wakeLock.acquire();
     }
 
