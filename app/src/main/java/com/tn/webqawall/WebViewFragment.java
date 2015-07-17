@@ -17,28 +17,12 @@ public class WebViewFragment extends Fragment
     private static final String URL_LOAD = "url_load";
 
     private WQWWebView webView;
-    private String url;
-
-    public static WebViewFragment newInstance(String url)
-    {
-
-        WebViewFragment fragment = new WebViewFragment();
-
-        Bundle args = new Bundle();
-        args.putString(URL_LOAD, url);
-        fragment.setArguments(args);
-
-        return fragment;
-    }
+    private String mUrl;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-
-        Bundle args = getArguments();
-        url = args.getString(URL_LOAD);
-
         View view = inflater.inflate(R.layout.web_view_fragment, container, false);
         webView = (WQWWebView) view.findViewById(R.id.qa_wall_web_view);
 
@@ -49,7 +33,7 @@ public class WebViewFragment extends Fragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(URL_LOAD, url);
+        outState.putString(URL_LOAD, mUrl);
     }
 
     @Override
@@ -59,9 +43,23 @@ public class WebViewFragment extends Fragment
         if (savedInstanceState != null)
         {
             // Restore last state for checked position.
-            url = savedInstanceState.getString(URL_LOAD);
+            mUrl = savedInstanceState.getString(URL_LOAD);
         }
-        webView.loadUrl(url);
+
+        loadUrl();
+    }
+
+    public void setUrl(String url)
+    {
+        this.mUrl = url;
+    }
+
+    public void loadUrl()
+    {
+        if(webView != null && mUrl != null)
+        {
+            webView.loadUrl(mUrl);
+        }
     }
 
     /* @Override
