@@ -18,9 +18,7 @@ import com.tn.webqawall.socket.event.Page;
  */
 public class MainActivity extends FragmentActivity
 {
-
     private final static String URL_FROM_INTENT = "URL_FROM_INTENT";
-    private String url;
     private ViewPager viewPager;
     private MyPagerAdapter adapterViewPager;
     private WebViewFragment webViewFragment;
@@ -34,12 +32,16 @@ public class MainActivity extends FragmentActivity
         Log.d("WQWLog", "Action Value: " + getIntent().getAction());
         Log.d("WQWLog", "Has Extras: " + (getIntent().getExtras() != null));
 
+        webViewFragment = new WebViewFragment();
+        infoFragment = new InfoFragment();
+
         if (getIntent().getAction().equals("android.intent.action.MAIN") &&
                 getIntent().getExtras() != null)
         {
-
             Log.d("WQWLog", "Extra Value on URL_FROM_INTENT: " + getIntent().getExtras().get(URL_FROM_INTENT));
-            url = getIntent().getExtras().getString(URL_FROM_INTENT);
+            String url = getIntent().getExtras().getString(URL_FROM_INTENT);
+
+            webViewFragment.setUrl(url);
         }
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
@@ -50,11 +52,9 @@ public class MainActivity extends FragmentActivity
 
         setContentView(R.layout.main_activity);
 
-        webViewFragment = new WebViewFragment();
-        infoFragment = new InfoFragment();
 
         viewPager = (ViewPager) findViewById(R.id.view_pager_qa_wall);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager(), "http://tn.com.ar");
+        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
 
         App.getSocket().on(Page.EVENT_NAME, new Emitter.Listener()
@@ -80,7 +80,7 @@ public class MainActivity extends FragmentActivity
     {
         private final int NUM_ITEMS = 2;
 
-        public MyPagerAdapter(FragmentManager fm, String url)
+        public MyPagerAdapter(FragmentManager fm)
         {
             super(fm);
         }
