@@ -1,24 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#666666">
+    android:background="#666666"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Informacion del Dispositivo"
-        android:textSize="20sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:text="Informacion del Dispositivo"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
+    <LinearLayout style="@style/linearInfo">
 
+        <TextView
+            style="@style/TextInfoTittles"
+            android:text="Nombre: " />
 
+        <TextView
+            android:id="@+id/device_name_info_fragment"
+            style="@style/TextInfoData" />
+    </LinearLayout>
 
+    <LinearLayout style="@style/linearInfo">
 
+        <TextView
+            style="@style/TextInfoTittles"
+            android:text="Modelo: " />
+
+        <TextView
+            android:id="@+id/device_model_info_fragment"
+            style="@style/TextInfoData" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/linearInfo">
+
+        <TextView
+            style="@style/TextInfoTittles"
+            android:text="Version SDK: " />
+
+        <TextView
+            android:id="@+id/sdk_info_fragment"
+            style="@style/TextInfoData" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/linearInfo">
+
+        <TextView
+            style="@style/TextInfoTittles"
+            android:text="Resolucion: " />
+
+        <TextView
+            android:id="@+id/resolution_info_fragment"
+            style="@style/TextInfoData" />
+    </LinearLayout>
 
 
 </LinearLayout>
