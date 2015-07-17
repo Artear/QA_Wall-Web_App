@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 public class App extends Application
 {
-    public static final String TAG= "SOCKET";
+    public static final String TAG = "SOCKET";
     private static Socket socket;
     private static RemoteLogger remoteLogger;
 
@@ -66,6 +66,14 @@ public class App extends Application
             }
         });
 
+        socket.on("disconnect", new Emitter.Listener()
+        {
+            @Override
+            public void call(final Object... args)
+            {
+                android.util.Log.d(TAG, "Socket Disconnected: " + Arrays.toString(args));
+            }
+        });
     }
 
     public static Socket getSocket()
