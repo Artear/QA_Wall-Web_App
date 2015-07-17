@@ -1,6 +1,8 @@
 package com.tn.webqawall;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,7 @@ public class MainActivity extends FragmentActivity
     private MyPagerAdapter adapterViewPager;
     private WebViewFragment webViewFragment;
     private InfoFragment infoFragment;
+    private PowerManager.WakeLock wakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +85,11 @@ public class MainActivity extends FragmentActivity
         });
 
         App.getSocket().connect();
+
+        //Prevent screen sleep
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, null);
+        wakeLock.acquire();
     }
 
     @Override
@@ -91,6 +99,9 @@ public class MainActivity extends FragmentActivity
 
         App.getSocket().disconnect();
         App.getSocket().off(Page.EVENT_NAME);
+
+        //Release screen lock
+        wakeLock.release();
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter
