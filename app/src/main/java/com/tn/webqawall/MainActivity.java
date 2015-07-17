@@ -74,7 +74,6 @@ public class MainActivity extends FragmentActivity
                 });
             }
         });
-
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter
@@ -110,13 +109,13 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onBackPressed()
     {
-        Fragment webview = getSupportFragmentManager().findFragmentByTag("webview");
+        Fragment currentFragment = adapterViewPager.getItem(viewPager.getCurrentItem());
 
-        if (webview instanceof WebViewFragment)
+        if (currentFragment == webViewFragment)
         {
-            if (((WebViewFragment) webview).canGoBack())
+            if (((WebViewFragment) currentFragment).canGoBack())
             {
-                ((WebViewFragment) webview).goBack();
+                ((WebViewFragment) currentFragment).goBack();
             } else
             {
                 super.onBackPressed();
