@@ -52,7 +52,8 @@ public class InfoFragment extends Fragment
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
 
-        resolutionTextView.setText(screenHeight + " x " + screenWidth);
+        String text = screenHeight + " x " + screenWidth;
+        resolutionTextView.setText(text);
         return view;
     }
 

@@ -5,15 +5,19 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import com.github.nkzawa.emitter.Emitter;
 import com.google.gson.Gson;
 import com.tn.webqawall.socket.event.Page;
+import io.palaima.debugdrawer.DebugDrawer;
+import io.palaima.debugdrawer.module.BuildModule;
+import io.palaima.debugdrawer.module.DeviceModule;
+import io.palaima.debugdrawer.module.NetworkModule;
+import io.palaima.debugdrawer.module.SettingsModule;
+import io.palaima.debugdrawer.scalpel.ScalpelModule;
 
 /**
  * Created by David Tolchinsky on 14/07/2015.
@@ -22,11 +26,9 @@ public class MainActivity extends FragmentActivity
 {
     private final static String URL_FROM_INTENT = "URL_FROM_INTENT";
     public static final String WAKE_LOCK_TAG = "WAKE_LOCK_TAG";
-    private ViewPager viewPager;
-    private MyPagerAdapter adapterViewPager;
     private WebViewFragment webViewFragment;
-    private InfoFragment infoFragment;
     private PowerManager.WakeLock wakeLock;
+    private DebugDrawer debugDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,7 +39,6 @@ public class MainActivity extends FragmentActivity
         Log.d("WQWLog", "Has Extras: " + (getIntent().getExtras() != null));
 
         webViewFragment = new WebViewFragment();
-        infoFragment = new InfoFragment();
 
         if (getIntent().getAction().equals("android.intent.action.MAIN") &&
                 getIntent().getExtras() != null)
@@ -56,10 +57,40 @@ public class MainActivity extends FragmentActivity
 
         setContentView(R.layout.main_activity);
 
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.relative_qa_wall, webViewFragment);
+        fragmentTransaction.commit();
 
-        viewPager = (ViewPager) findViewById(R.id.view_pager_qa_wall);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapterViewPager);
+        if (BuildConfig.DEBUG)
+        {
+            debugDrawer = new DebugDrawer.Builder(this).modules(
+                    new ScalpelModule(this),
+                    new DeviceModule(this),
+                    new BuildModule(this),
+                    new NetworkModule(this),
+                    new SettingsModule(this)
+            ).build();
+        }
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        if (debugDrawer != null)
+        {
+            debugDrawer.onStart();
+        }
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if (debugDrawer != null)
+        {
+            debugDrawer.onStop();
+        }
     }
 
     @Override
@@ -105,40 +136,10 @@ public class MainActivity extends FragmentActivity
         wakeLock.release();
     }
 
-    public class MyPagerAdapter extends FragmentPagerAdapter
-    {
-        private final int NUM_ITEMS = 2;
-
-        public MyPagerAdapter(FragmentManager fm)
-        {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position)
-        {
-            switch (position)
-            {
-                case 0: // Fragment # 0 - This will show FirstFragment
-                    return webViewFragment;
-                case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return infoFragment;
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount()
-        {
-            return NUM_ITEMS;
-        }
-    }
-
     @Override
     public void onBackPressed()
     {
-        Fragment currentFragment = adapterViewPager.getItem(viewPager.getCurrentItem());
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.relative_qa_wall);
 
         if (currentFragment == webViewFragment)
         {
