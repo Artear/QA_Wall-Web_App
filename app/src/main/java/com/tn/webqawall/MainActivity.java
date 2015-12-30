@@ -9,8 +9,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Ack;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
+import com.qa_wall_logger_client.RemoteLogger;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.tn.webqawall.socket.event.Page;
 import io.palaima.debugdrawer.DebugDrawer;
 import io.palaima.debugdrawer.module.BuildModule;
@@ -18,6 +27,12 @@ import io.palaima.debugdrawer.module.DeviceModule;
 import io.palaima.debugdrawer.module.NetworkModule;
 import io.palaima.debugdrawer.module.SettingsModule;
 import io.palaima.debugdrawer.scalpel.ScalpelModule;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Created by David Tolchinsky on 14/07/2015.
@@ -29,6 +44,10 @@ public class MainActivity extends FragmentActivity
     private WebViewFragment webViewFragment;
     private PowerManager.WakeLock wakeLock;
     private DebugDrawer debugDrawer;
+
+    public static final String TAG = "SOCKET";
+    private static RemoteLogger remoteLogger;
+    private Socket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -98,25 +117,93 @@ public class MainActivity extends FragmentActivity
     {
         super.onResume();
 
-        App.getSocket().on(Page.EVENT_NAME, new Emitter.Listener()
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url("http://tn.codiarte.com/public/QA_Wall-Logger_Server-Helper/get_ip.php").build();
+        client.newCall(request).enqueue(new Callback()
         {
             @Override
-            public void call(final Object... args)
+            public void onFailure(final Request request, final IOException e)
             {
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        Page pageEvent = new Gson().fromJson(String.valueOf(args[0]), Page.class);
+                Toast.makeText(MainActivity.this, "Error getting Node IP", Toast.LENGTH_LONG).show();
+            }
 
-                        webViewFragment.setUrl(pageEvent.getUrl());
-                    }
-                });
+            @Override
+            public void onResponse(final Response response) throws IOException
+            {
+                try
+                {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+                    socket = IO.socket("http://" + jsonObject.getString("localIp") + ":" + jsonObject.getString("socket_port"));
+
+                    remoteLogger = new RemoteLogger(new RemoteLogger.Listener()
+                    {
+                        @Override
+                        public String onParseToJson(final com.qa_wall_logger_client.log.Log log)
+                        {
+                            return new Gson().toJson(log);
+                        }
+
+                        @Override
+                        public void onSentToNetwork(final String parsedObject)
+                        {
+                            android.util.Log.d(TAG, "Sending message: " + parsedObject);
+                            socket.emit(com.tn.webqawall.socket.event.Log.EVENT_NAME, parsedObject, new Ack()
+                            {
+                                @Override
+                                public void call(final Object... args)
+                                {
+                                    android.util.Log.d(TAG, "Message sent: " + Arrays.toString(args));
+                                }
+                            });
+                        }
+                    });
+
+                    socket.on("connect", new Emitter.Listener()
+                    {
+                        @Override
+                        public void call(final Object... args)
+                        {
+                            android.util.Log.d(TAG, "Socket Connected: " + Arrays.toString(args));
+                        }
+                    });
+
+                    socket.on("disconnect", new Emitter.Listener()
+                    {
+                        @Override
+                        public void call(final Object... args)
+                        {
+                            android.util.Log.d(TAG, "Socket Disconnected: " + Arrays.toString(args));
+                        }
+                    });
+
+                    socket.on(Page.EVENT_NAME, new Emitter.Listener()
+                    {
+                        @Override
+                        public void call(final Object... args)
+                        {
+                            runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    Page pageEvent = new Gson().fromJson(String.valueOf(args[0]), Page.class);
+
+                                    webViewFragment.setUrl(pageEvent.getUrl());
+                                }
+                            });
+                        }
+                    });
+
+                } catch (JSONException | URISyntaxException e)
+                {
+                    Log.e(TAG, "Error connecting to Socket " + e.getMessage());
+                    Toast.makeText(MainActivity.this, "Error parsing the Node IP", Toast.LENGTH_LONG).show();
+                }
+
+
+                socket.connect();
             }
         });
-
-        App.getSocket().connect();
 
         //Prevent screen sleep
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -129,8 +216,11 @@ public class MainActivity extends FragmentActivity
     {
         super.onPause();
 
-        App.getSocket().disconnect();
-        App.getSocket().off(Page.EVENT_NAME);
+        if (socket != null)
+        {
+            socket.disconnect();
+            socket.off(Page.EVENT_NAME);
+        }
 
         //Release screen lock
         wakeLock.release();
